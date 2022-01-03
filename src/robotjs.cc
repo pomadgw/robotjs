@@ -356,7 +356,6 @@ static KeyNames key_names[] =
 
 	{ "numpad_lock",	K_NUMPAD_LOCK },
 	{ "numpad_0",		K_NUMPAD_0 },
-	{ "numpad_0",		K_NUMPAD_0 },
 	{ "numpad_1",		K_NUMPAD_1 },
 	{ "numpad_2",		K_NUMPAD_2 },
 	{ "numpad_3",		K_NUMPAD_3 },
