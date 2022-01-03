@@ -12,9 +12,11 @@
 	#include <X11/extensions/XTest.h>
 	#include "xdisplay.h"
 
-	// use uinput
-	#include <fcntl.h>
-	#include <linux/uinput.h>
+	#if defined(USE_UINPUT)
+		// use uinput
+		#include <fcntl.h>
+		#include <linux/uinput.h>
+	#endif
 #endif
 
 /* Convenience wrappers around ugly APIs. */
@@ -31,7 +33,7 @@
 		(X_KEY_EVENT(display, key, is_press))
 #endif
 
-#ifdef USE_X11
+#ifdef USE_UINPUT
 
 static int uinput_fd = -1;
 
@@ -228,8 +230,16 @@ void toggleKeyCode(MMKeyCode code, const bool down, MMKeyFlags flags)
 		if (flags & MOD_SHIFT) win32KeyEvent(K_SHIFT, dwFlags);
 	}
 #elif defined(USE_X11)
-	Display *display = XGetMainDisplay();
 	const Bool is_press = down ? True : False; /* Just to be safe. */
+
+#ifdef USE_UINPUT
+	init_uinput();
+
+	send_uinput_key(code, is_press);
+
+	close_uinput();
+#else
+	Display *display = XGetMainDisplay();
 
 	if (down) {
 		/* Parse modifier keys. */
@@ -249,6 +259,8 @@ void toggleKeyCode(MMKeyCode code, const bool down, MMKeyFlags flags)
 		if (flags & MOD_CONTROL) X_KEY_EVENT(display, K_CONTROL, is_press);
 		if (flags & MOD_SHIFT) X_KEY_EVENT(display, K_SHIFT, is_press);
 	}
+#endif
+
 #endif
 }
 

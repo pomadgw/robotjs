@@ -20,6 +20,7 @@
 
 #if !defined(USE_X11) && !defined(NUSE_X11) && !defined(IS_MACOSX) && !defined(IS_WINDOWS)
 	#define USE_X11
+	#define USE_UINPUT
 #endif /* USE_X11 */
 
 #if defined(IS_WINDOWS)
