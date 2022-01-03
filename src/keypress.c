@@ -162,7 +162,57 @@ void toggleKeyCode(MMKeyCode code, const bool down, MMKeyFlags flags)
 	}
 #elif defined(USE_X11)
 	Display *display = XGetMainDisplay();
+	XKeyboardState x;
+	XGetKeyboardControl(display, &x);
+
 	const Bool is_press = down ? True : False; /* Just to be safe. */
+
+	// in X11, numpad keys send different keycode
+	// depending on the lock state
+
+	Bool is_numlock_on = x.led_mask & 2 ? True : False;
+
+	MMKeyCode pressed_code = code;
+
+	if (!is_numlock_on) {
+		switch(pressed_code) {
+			case XK_KP_0:
+				pressed_code = XK_KP_Insert;
+				break;
+			case XK_KP_1:
+				pressed_code = XK_KP_End;
+				break;
+			case XK_KP_2:
+				pressed_code = XK_KP_Down;
+				break;
+			case XK_KP_3:
+				pressed_code = XK_KP_Page_Down;
+				break;
+			case XK_KP_4:
+				pressed_code = XK_KP_Left;
+				break;
+			case XK_KP_5:
+				pressed_code = XK_KP_Begin;
+				break;
+			case XK_KP_6:
+				pressed_code = XK_KP_Right;
+				break;
+			case XK_KP_7:
+				pressed_code = XK_KP_Home;
+				break;
+			case XK_KP_8:
+				pressed_code = XK_KP_Up;
+				break;
+			case XK_KP_9:
+				pressed_code = XK_KP_Page_Up;
+				break;
+			case XK_KP_Decimal:
+				pressed_code = XK_KP_Delete;
+				break;
+			default:
+				break;
+		}
+	}
 
 	if (down) {
 		/* Parse modifier keys. */
@@ -171,10 +221,10 @@ void toggleKeyCode(MMKeyCode code, const bool down, MMKeyFlags flags)
 		if (flags & MOD_CONTROL) X_KEY_EVENT_WAIT(display, K_CONTROL, is_press);
 		if (flags & MOD_SHIFT) X_KEY_EVENT_WAIT(display, K_SHIFT, is_press);
 
-		X_KEY_EVENT_WAIT(display, code, is_press);
+		X_KEY_EVENT_WAIT(display, pressed_code, is_press);
 	} else {
 		/* Reverse order for key up */
-		X_KEY_EVENT_WAIT(display, code, is_press);
+		X_KEY_EVENT_WAIT(display, pressed_code, is_press);
 
 		/* Parse modifier keys. */
 		if (flags & MOD_META) X_KEY_EVENT(display, K_META, is_press);
