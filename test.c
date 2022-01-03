@@ -56,13 +56,14 @@ int main(void)
 	sleep(3);
 
 	/* Key press, report the event, send key release, and report again */
-	send_key(fd, KEY_SPACE);
-	send_key(fd, KEY_A);
-	emit(fd, EV_KEY, KEY_S, 1);
-	emit(fd, EV_SYN, SYN_REPORT, 0);
-	sleep(1);
-	emit(fd, EV_KEY, KEY_S, 0);
-	emit(fd, EV_SYN, SYN_REPORT, 0);
+	send_key(fd, KEY_ENTER);
+	send_key(fd, KEY_ENTER);
+	send_key(fd, KEY_ENTER);
+	// emit(fd, EV_KEY, KEY_S, 1);
+	// emit(fd, EV_SYN, SYN_REPORT, 0);
+	// sleep(1);
+	// emit(fd, EV_KEY, KEY_S, 0);
+	// emit(fd, EV_SYN, SYN_REPORT, 0);
 
 	/*
 	 * Give userspace some time to read the events before we destroy the

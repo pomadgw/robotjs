@@ -37,12 +37,8 @@
 
 static int uinput_fd = -1;
 
-void emit_uinput(int type, int code, int val)
+void emit_uinput(int fd, int type, int code, int val)
 {
-	if (uinput_fd < 0) {
-		return;
-	}
-
 	struct input_event ie;
 
 	ie.type = type;
@@ -52,17 +48,22 @@ void emit_uinput(int type, int code, int val)
 	ie.time.tv_sec = 0;
 	ie.time.tv_usec = 0;
 
-	write(uinput_fd, &ie, sizeof(ie));
+	write(fd, &ie, sizeof(ie));
 }
 
-void send_uinput_key(int code, int is_press)
+void send_uinput_key(int fd, int code, int is_press)
 {
-	emit_uinput(EV_KEY, code, is_press);
-	emit_uinput(EV_SYN, SYN_REPORT, 0);
+	emit_uinput(fd, EV_KEY, code, 1);
+	emit_uinput(fd, EV_SYN, SYN_REPORT, 0);
+	emit_uinput(fd, EV_KEY, code, 0);
+	emit_uinput(fd, EV_SYN, SYN_REPORT, 0);
 }
 
 void init_uinput()
 {
+	if (uinput_fd != -1)
+		return;
+
 	struct uinput_setup usetup;
 
 	uinput_fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
@@ -78,12 +79,14 @@ void init_uinput()
 
 	memset(&usetup, 0, sizeof(usetup));
 	usetup.id.bustype = BUS_USB;
-	usetup.id.vendor = 0x1234; /* sample vendor */
-	usetup.id.product = 0x5678; /* sample product */
-	strcpy(usetup.name, "Robotjs Input");
+	usetup.id.vendor = 0x1214; /* sample vendor */
+	usetup.id.product = 0x5618; /* sample product */
+	strcpy(usetup.name, "robotjs input");
 
 	ioctl(uinput_fd, UI_DEV_SETUP, &usetup);
 	ioctl(uinput_fd, UI_DEV_CREATE);
+
+	printf("uinput initialized %d\n", uinput_fd);
 }
 
 void close_uinput() {
@@ -235,9 +238,9 @@ void toggleKeyCode(MMKeyCode code, const bool down, MMKeyFlags flags)
 #ifdef USE_UINPUT
 	init_uinput();
 
-	send_uinput_key(code, is_press);
+	send_uinput_key(uinput_fd, code, is_press);
 
-	close_uinput();
+	// close_uinput();
 #else
 	Display *display = XGetMainDisplay();
 	XKeyboardState x;
