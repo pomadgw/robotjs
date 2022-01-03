@@ -327,6 +327,8 @@ static KeyNames key_names[] =
 	{ "f24",            K_F24 },
 	{ "capslock",       K_CAPSLOCK },
 	{ "command",        K_META },
+	{ "meta",           K_META }, // linux uses this
+	{ "windows",        K_META }, // windows uses this
 	{ "alt",            K_ALT },
 	{ "right_alt",      K_RIGHT_ALT },
 	{ "control",        K_CONTROL },
