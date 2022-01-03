@@ -265,17 +265,16 @@ enum _MMKeyCode {
 	K_MENU = K_NOT_A_KEY,
 
 	K_NUMPAD_LOCK = XK_Num_Lock,
-	// TODO: numpad number keys' behavior is different between numlock on/off
-	K_NUMPAD_0 = XK_KP_0, // ins
-	K_NUMPAD_1 = XK_KP_1, // end
-	K_NUMPAD_2 = XK_KP_2, // down
-	K_NUMPAD_3 = XK_KP_3, // pg down
-	K_NUMPAD_4 = XK_KP_4, // left
+	K_NUMPAD_0 = XK_KP_0,
+	K_NUMPAD_1 = XK_KP_1,
+	K_NUMPAD_2 = XK_KP_2,
+	K_NUMPAD_3 = XK_KP_3,
+	K_NUMPAD_4 = XK_KP_4,
 	K_NUMPAD_5 = XK_KP_5,
-	K_NUMPAD_6 = XK_KP_6, // right
-	K_NUMPAD_7 = XK_KP_7, // home
-	K_NUMPAD_8 = XK_KP_8, // up
-	K_NUMPAD_9 = XK_KP_9, // pg up
+	K_NUMPAD_6 = XK_KP_6,
+	K_NUMPAD_7 = XK_KP_7,
+	K_NUMPAD_8 = XK_KP_8,
+	K_NUMPAD_9 = XK_KP_9,
 	K_NUMPAD_PLUS = XK_KP_Add,
 	K_NUMPAD_MINUS = XK_KP_Subtract,
 	K_NUMPAD_MULTIPLY = XK_KP_Multiply,
