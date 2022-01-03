@@ -36,6 +36,13 @@ extern "C"
 
 	typedef unsigned int MMKeyFlags;
 
+	#define UINPUT_KEYDOWN 1
+	#define UINPUT_KEYUP 0
+
+	void init_uinput();
+	void close_uinput();
+	void send_uinput_key(int code, int is_press);
+
 #elif defined(IS_WINDOWS)
 
 	enum _MMKeyFlags {

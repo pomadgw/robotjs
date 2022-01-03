@@ -11,6 +11,10 @@
 #elif defined(USE_X11)
 	#include <X11/extensions/XTest.h>
 	#include "xdisplay.h"
+
+	// use uinput
+	#include <fcntl.h>
+	#include <linux/uinput.h>
 #endif
 
 /* Convenience wrappers around ugly APIs. */
@@ -25,6 +29,69 @@
 		 XSync(display, false))
 	#define X_KEY_EVENT_WAIT(display, key, is_press) \
 		(X_KEY_EVENT(display, key, is_press))
+#endif
+
+#ifdef USE_X11
+
+static int uinput_fd = -1;
+
+void emit_uinput(int type, int code, int val)
+{
+	if (uinput_fd < 0) {
+		return;
+	}
+
+	struct input_event ie;
+
+	ie.type = type;
+	ie.code = code;
+	ie.value = val;
+	/* timestamp values below are ignored */
+	ie.time.tv_sec = 0;
+	ie.time.tv_usec = 0;
+
+	write(uinput_fd, &ie, sizeof(ie));
+}
+
+void send_uinput_key(int code, int is_press)
+{
+	emit_uinput(EV_KEY, code, is_press);
+	emit_uinput(EV_SYN, SYN_REPORT, 0);
+}
+
+void init_uinput()
+{
+	struct uinput_setup usetup;
+
+	uinput_fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
+
+	/*
+	 * The ioctls below will enable the device that is about to be
+	 * created, to pass key events, in this case the space key.
+	 */
+	ioctl(uinput_fd, UI_SET_EVBIT, EV_KEY);
+	
+	for(int i = 0; i < KEY_CNT; i++)
+		ioctl(uinput_fd, UI_SET_KEYBIT, i);
+
+	memset(&usetup, 0, sizeof(usetup));
+	usetup.id.bustype = BUS_USB;
+	usetup.id.vendor = 0x1234; /* sample vendor */
+	usetup.id.product = 0x5678; /* sample product */
+	strcpy(usetup.name, "Robotjs Input");
+
+	ioctl(uinput_fd, UI_DEV_SETUP, &usetup);
+	ioctl(uinput_fd, UI_DEV_CREATE);
+}
+
+void close_uinput() {
+	if (uinput_fd != -1) {
+		ioctl(uinput_fd, UI_DEV_DESTROY);
+		close(uinput_fd);
+		uinput_fd = -1;
+	}
+}
+
 #endif
 
 #if defined(IS_MACOSX)
